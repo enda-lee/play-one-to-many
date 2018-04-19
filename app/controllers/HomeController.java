@@ -27,8 +27,7 @@ public class HomeController extends Controller {
 
     /** http://stackoverflow.com/a/10159220/6322856 **/
     @Inject
-    public HomeController(/*Environment e,*/ FormFactory f) {
-        //this.env = e;
+    public HomeController(FormFactory f) {
         this.formFactory = f;
     }
 
@@ -104,7 +103,7 @@ public class HomeController extends Controller {
         // Set a flash message
         flash("success", "Product " + newProductForm.get().getName() + " has been created or updated");
         
-        // Redirect to the admin home
+        // Redirect to the  products page
         return redirect(controllers.routes.HomeController.products(0));
     }
 
@@ -113,18 +112,14 @@ public class HomeController extends Controller {
     @Transactional
     public Result updateProduct(Long id) {
 
-        Product editProduct = new Product();
         // Retrieve the product by id
-        // Create a form based on the Product class
-
-        // Catch exception if product not found
-        try {
-            editProduct = Product.find.byId(id);
-        } catch (Exception e) {
+        Product editProduct = Product.find.byId(id);
+        
+        if (editProduct == null){
             return badRequest("error");
         }
         
-        // Instantiate a form object based on the Product class
+        // Create a form based on the Product class
         Form<Product> updateProductForm = formFactory.form(Product.class).fill(editProduct);
         // Render the Add Product View, passing the form object
         return ok(addProduct.render(updateProductForm));
